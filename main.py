@@ -1,25 +1,42 @@
-import numpy as np
-import pandas as pd
-import gymnasium as gym
-import torch
-from torch import nn
-from collections import namedtuple, deque
-import math, random
+import warnings
+warnings.filterwarnings("ignore")
+from torch import multiprocessing
+
+
+from collections import defaultdict
+
 import matplotlib.pyplot as plt
-from itertools import count
+import torch
+from tensordict.nn import TensorDictModule
+from tensordict.nn.distributions import NormalParamExtractor
+from torch import nn
+from torchrl.collectors import SyncDataCollector
+from torchrl.data.replay_buffers import ReplayBuffer
+from torchrl.data.replay_buffers.samplers import SamplerWithoutReplacement
+from torchrl.data.replay_buffers.storages import LazyTensorStorage
+from torchrl.envs import (Compose, DoubleToFloat, ObservationNorm, StepCounter,
+                          TransformedEnv)
+from torchrl.envs.libs.gym import GymEnv
+from torchrl.envs.utils import check_env_specs, ExplorationType, set_exploration_type
+from torchrl.modules import ProbabilisticActor, TanhNormal, ValueOperator
+from torchrl.objectives import ClipPPOLoss
+from torchrl.objectives.value import GAE
+from tqdm import tqdm
 import os
 
 device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
 torch.set_default_device(device=device)
 print(f"Using {device} device")
 
-BATCH_SIZE = 32
-GAMMA = 0.99
-EPS_START = 1
-EPS_END = 0.1
-EPS_DECAY = 150000
-TAU = 0.005
-LR = 3e-4
+Alpha = 1
+Horizon = 128
+Adam_stepsize = 2.5e-4 * Alpha
+Num_epochs = 3
+Minibatch_size = 32 * 8
+Discount = 0.99
+GAE_parameter = 0.95
+Number_of_actors = 8
+Clipping_parameter = 0.1 * Alpha
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
