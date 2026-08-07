@@ -61,7 +61,7 @@ def preprocess(obs, prev_state):
 
         
 
-env = gym.make("CarRacing-v3", render_mode="human", lap_complete_percent=0.95, domain_randomize=False, continuous=False, max_episode_steps=1000)
+base_env = gym.make("CarRacing-v3", render_mode="human", lap_complete_percent=0.95, domain_randomize=False, continuous=False, max_episode_steps=1000)
 
 
 frames_per_batch = 1000
@@ -72,9 +72,19 @@ num_epochs = 10  # optimization steps per batch of data collected
 clip_epsilon = (
     0.2  # clip value for PPO loss: see the equation in the intro for more context.
 )
-gamma = 0.99
-lmbda = 0.95
+gamma = Discount
+lmbda = GAE_parameter
 entropy_eps = 1e-4
+
+env = TransformedEnv(
+    base_env,
+    Compose(
+        # normalize observations
+        ObservationNorm(in_keys=["observation"]),
+        DoubleToFloat(),
+        StepCounter(),
+    ),
+)
 
 
     # running_reward.append(total_reward)
