@@ -38,7 +38,7 @@ device = (
 )
 torch.set_default_device(device)
 num_cells = 256  # number of cells in each layer i.e. output dim.
-lr = 3e-4
+lr = 1e-4
 max_grad_norm = 1.0
 
 frames_per_batch = 1000
