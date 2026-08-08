@@ -52,7 +52,7 @@ clip_epsilon = (
 )
 gamma = 0.99
 lmbda = 0.95
-entropy_eps = 1e-4
+entropy_eps = 1e-2
 
 base_env = GymEnv("CarRacing-v3", render_mode="human", lap_complete_percent=0.95, domain_randomize=False, continuous=True, device=device)
 
@@ -151,6 +151,8 @@ optim = torch.optim.Adam(loss_module.parameters(), lr)
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
     optim, total_frames // frames_per_batch, 0.0
 )
+
+# scheduler = torch.optim.lr_scheduler.LinearLR(optim, 1.0, 0.0, total_frames // frames_per_batch)
 
 logs = defaultdict(list)
 pbar = tqdm(total=total_frames)
