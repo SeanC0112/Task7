@@ -38,12 +38,12 @@ device = (
 )
 torch.set_default_device(device)
 num_cells = 256  # number of cells in each layer i.e. output dim.
-lr = 1e-4
+lr = 8e-5
 max_grad_norm = 1.0
 
 frames_per_batch = 1000
 # For a complete training, bring the number of frames up to 1M
-total_frames = 500000
+total_frames = 750000
 
 sub_batch_size = 64  # cardinality of the sub-samples gathered from the current data in the inner loop
 num_epochs = 10  # optimization steps per batch of data collected
@@ -52,7 +52,7 @@ clip_epsilon = (
 )
 gamma = 0.99
 lmbda = 0.95
-entropy_eps = 1e-2
+entropy_eps = 12e-3
 
 base_env = GymEnv("CarRacing-v3", render_mode="human", lap_complete_percent=0.95, domain_randomize=False, continuous=True, device=device)
 
